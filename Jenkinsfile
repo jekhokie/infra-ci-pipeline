@@ -5,6 +5,7 @@ pipeline {
         stage('Declare Base Image') {
             steps {
                 echo 'Base image is...'
+                sh 'whoami'
                 sh '/usr/local/bin/vboxmanage showvminfo CentOS7'
             }
         }
