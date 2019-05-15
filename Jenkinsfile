@@ -5,12 +5,14 @@ pipeline {
         stage('Declare Base Image') {
             steps {
                 echo 'Base image is...'
-                sh 'vboxmanage showvminfo CentOS7'
+                sh '/usr/local/bin/vboxmanage showvminfo CentOS7'
             }
         }
         stage('Security Hardening') {
             steps {
                 echo 'Hardening...'
+                echo 'Cloning base VM template to new VM...'
+                sh ''
             }
         }
         stage('Kernel Tuning') {
