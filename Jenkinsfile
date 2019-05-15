@@ -6,6 +6,7 @@ pipeline {
             steps {
                 echo 'Base image is...'
                 sh 'whoami'
+                sh 'pwd'
                 sh '/usr/local/bin/vboxmanage showvminfo CentOS7'
             }
         }
