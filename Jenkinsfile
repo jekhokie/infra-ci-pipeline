@@ -37,7 +37,6 @@ pipeline {
         stage('Cleanup') {
             steps {
                 echo 'Removing VM templates...'
-                sh "
             }
         }
     }
