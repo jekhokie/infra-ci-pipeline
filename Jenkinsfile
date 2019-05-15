@@ -8,13 +8,14 @@ pipeline {
                 sh 'whoami'
                 sh 'pwd'
                 sh '/usr/local/bin/vboxmanage showvminfo CentOS7'
+                echo "Build ID: ${env.BUILD_ID}"
             }
         }
         stage('Security Hardening') {
             steps {
                 echo 'Hardening...'
                 echo 'Cloning base VM template to new VM...'
-                sh ''
+                sh "/usr/local/bin/vboxmanage clonevm CentOS7 CentOS7-harden-${env.BUILD_ID}"
             }
         }
         stage('Kernel Tuning') {
