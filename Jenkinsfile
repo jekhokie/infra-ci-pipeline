@@ -1,10 +1,12 @@
 pipeline {
     agent any
 
-    stages {
-        def baseVM     = "CentOS7"
-        def hardenedVM = "${baseVM}-harden-${env.BUILD_ID}"
+    environment {
+        baseVM     = "CentOS7"
+        hardenedVM = "${baseVM}-harden-${env.BUILD_ID}"
+    }
 
+    stages {
         stage('Declare Base Image') {
             steps {
                 echo 'Base image is...'
