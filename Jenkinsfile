@@ -2,19 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Declare Base Image') {
             steps {
-                echo 'Building...'
+                echo 'Base image is...'
+                sh 'vboxmanage showvminfo CentOS7'
             }
         }
-        stage('Test') {
+        stage('Security Hardening') {
+            steps {
+                echo 'Hardening...'
+            }
+        }
+        stage('Kernel Tuning') {
             steps {
                 sh 'hostname -f'
             }
         }
-        stage('Deploy') {
+        stage('Middleware Install') {
             steps {
-                echo 'Deploying...'
+                echo 'Installing Middleware...'
             }
         }
     }
