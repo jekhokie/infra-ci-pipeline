@@ -15,7 +15,7 @@ pipeline {
             steps {
                 echo 'Hardening...'
                 echo 'Cloning base VM template to new VM...'
-                sh "/usr/local/bin/vboxmanage clonevm CentOS7 CentOS7-harden-${env.BUILD_ID}"
+                sh "/usr/local/bin/vboxmanage clonevm CentOS7 --name CentOS7-harden-${env.BUILD_ID}"
             }
         }
         stage('Kernel Tuning') {
