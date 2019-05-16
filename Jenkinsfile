@@ -27,6 +27,7 @@ pipeline {
                 echo 'Starting new VM...'
                 sh "${vbCommand} startvm '${hardenedVM}' --type headless"
 
+                echo 'Waiting for IP address...'
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
                         script {
@@ -35,11 +36,10 @@ pipeline {
                                 returnStdout: true
                             )
                             println("$r")
-                            return (r == 0)
+                            return (r != 'No value set!')
                         }
                     }
                 }
-                echo 'Waiting for IP address...'
 
                 echo 'Removing Hardened VM...'
                 //sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
