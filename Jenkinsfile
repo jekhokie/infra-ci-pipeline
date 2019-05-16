@@ -42,7 +42,7 @@ pipeline {
                 echo 'Waiting for IP address...'
 
                 echo 'Removing Hardened VM...'
-                #sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
+                //sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
             }
         }
         stage('Kernel Tuning') {
