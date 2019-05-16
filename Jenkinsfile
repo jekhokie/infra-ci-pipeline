@@ -30,12 +30,14 @@ pipeline {
                 echo 'Waiting for IP address...'
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
-                        def r = sh (
-                            script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
-                            returnStatus: true
-                        )
+                        script {
+                            def r = sh (
+                                script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                                returnStatus: true
+                            )
 
-                        return (r == 0)
+                            return (r == 0)
+                        }
                     }
                 }
                 //echo "${r.trim()}"
