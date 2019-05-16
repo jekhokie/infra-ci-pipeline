@@ -1,3 +1,6 @@
+// variable declaration
+def hardenedVMIP = ""
+
 pipeline {
     agent any
 
@@ -36,11 +39,16 @@ pipeline {
                                 returnStatus: true
                             )
 
-                            return (r == 0)
+                            if (r == 0) {
+                                hardenedVMIP = sh (
+                                    script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                                    returnStdout: true
+                                ).trim()
+                            }
                         }
                     }
                 }
-                //echo "${r.trim()}"
+                echo "${hardenedVMIP.split(': ')[1]}"
 
                 echo 'Removing Hardened VM...'
                 sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
