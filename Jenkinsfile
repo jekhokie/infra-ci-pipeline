@@ -44,6 +44,7 @@ pipeline {
                                     script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                     returnStdout: true
                                 ).trim()
+                                return true
                             }
                         }
                     }
