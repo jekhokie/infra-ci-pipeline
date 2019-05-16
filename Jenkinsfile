@@ -40,7 +40,10 @@ pipeline {
                         }
                     }
                 }
-                def vmIPString = sh (script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'", returnStdout: true)
+                def vmIPString = sh (
+                    script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                    returnStdout: true
+                ).trim()
                 def vmIP = vmIPString.tokenize(': ')
                 echo "VM IP: ${vmIP}"
 
