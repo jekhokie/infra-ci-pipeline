@@ -36,7 +36,7 @@ pipeline {
                                 returnStdout: true
                             )
                             println("$r")
-                            return (r != 'No value set!')
+                            return ("$r" != 'No value set!')
                         }
                     }
                 }
