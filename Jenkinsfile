@@ -41,7 +41,7 @@ pipeline {
                     }
                 }
 
-                echo 'Removing Hardened VM Template...'
+                echo 'Removing Hardened VM...'
                 //sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
             }
         }
