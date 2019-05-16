@@ -40,9 +40,12 @@ pipeline {
                         }
                     }
                 }
+                def vmIPString = sh (script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'", returnStdout: true)
+                def vmIP = vmIPString.tokenize(': ')
+                echo "VM IP: ${vmIP}"
 
                 echo 'Removing Hardened VM...'
-                //sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
+                sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
             }
         }
         stage('Kernel Tuning') {
