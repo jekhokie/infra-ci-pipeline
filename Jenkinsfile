@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        vbCommand  = "/usr/local/bin/vboxmanage"
         baseVM     = "CentOS7"
         hardenedVM = "${baseVM}-harden-${env.BUILD_ID}"
     }
@@ -12,15 +13,36 @@ pipeline {
                 echo 'Base image is...'
                 sh 'whoami'
                 sh 'pwd'
-                sh "/usr/local/bin/vboxmanage showvminfo ${baseVM}"
+                sh "${vbCommand} showvminfo ${baseVM}"
                 echo "Build ID: ${env.BUILD_ID}"
             }
         }
         stage('Security Hardening') {
             steps {
                 echo 'Hardening...'
+
                 echo 'Cloning base VM template to new VM...'
-                sh "/usr/local/bin/vboxmanage clonevm ${baseVM} --name ${hardenedVM} --register"
+                sh "${vbCommand} clonevm ${baseVM} --name '${hardenedVM}' --register"
+
+                echo 'Starting new VM...'
+                sh "${vbCommand} startvm '${hardenedVM}' --type headless"
+
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitUntil {
+                        script {
+                            def r = sh (
+                                script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                                returnStdout: true
+                            )
+                            println("$r")
+                            return (r == 0)
+                        }
+                    }
+                }
+                echo 'Waiting for IP address...'
+
+                echo 'Removing Hardened VM...'
+                #sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
             }
         }
         stage('Kernel Tuning') {
