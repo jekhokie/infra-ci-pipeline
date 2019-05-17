@@ -34,11 +34,12 @@ pipeline {
                     waitUntil {
                         script {
                             def r = sh (
+                                // may be better to use the 'guestproperty wait' directive here
                                 script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/OS/LoggedInUsers'",
                                 returnStdout: true
                             )
 
-                            if (r.trim() != 'No value set!')
+                            if (r.trim() != 'No value set!') {
                                 hardenedVMIP = sh (
                                     script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                     returnStdout: true
