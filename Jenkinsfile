@@ -29,20 +29,21 @@ pipeline {
                 echo 'Starting new VM...'
                 sh "${vbCmd} startvm '${hardenedVM}' --type headless"
 
-                echo 'Waiting for IP address...'
+                echo 'Waiting for boot and IP address...'
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
                         script {
                             def r = sh (
-                                script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
-                                returnStatus: true
+                                script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/OS/LoggedInUsers'",
+                                returnStdout: true
                             )
 
-                            if (r == 0) {
+                            if (r.trim() != 'No value set!')
                                 hardenedVMIP = sh (
                                     script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                     returnStdout: true
                                 ).trim().split(': ')[1]
+
                                 return true
                             }
                         }
