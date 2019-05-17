@@ -51,10 +51,10 @@ pipeline {
                 echo "Hardened VM IP Address: ${hardenedVMIP}"
 
                 echo "Running smoke tests..."
-                sh "%{ansibleCmd} --version"
+                sh "${ansibleCmd} --version"
                 script {
                     def r = sh (
-                        script: "%{ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=osboxes ansible_ssh_pass=osboxes.org' ansible/harden_linux_os.yml"
+                        script: "${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=osboxes ansible_ssh_pass=osboxes.org' ansible/harden_linux_os.yml"
                     )
                 }
 
