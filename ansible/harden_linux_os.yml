@@ -2,6 +2,7 @@
 - name: Harden Operating System
   hosts: all
   become: yes
+  gather_facts: no
   tasks:
     - name: remove unnecessary packages
       yum:
