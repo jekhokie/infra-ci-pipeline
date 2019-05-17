@@ -34,8 +34,7 @@ pipeline {
                     waitUntil {
                         script {
                             def r = sh (
-                                // may be better to use the 'guestproperty wait' directive here
-                                script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/OS/LoggedInUsers'",
+                                script: "${vbCmd} guestproperty wait '${hardenedVM}' '/VirtualBox/GuestInfo/OS/LoggedInUsers'",
                                 returnStdout: true
                             )
 
