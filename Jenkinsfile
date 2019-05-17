@@ -42,13 +42,12 @@ pipeline {
                                 hardenedVMIP = sh (
                                     script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                     returnStdout: true
-                                ).trim()
+                                ).trim().split(': ')[1]
                                 return true
                             }
                         }
                     }
                 }
-                hardenedVMIP = hardenedVMIP.split(': ')[1]
                 echo "Hardened VM IP Address: ${hardenedVMIP}"
 
                 echo "Running smoke tests..."
