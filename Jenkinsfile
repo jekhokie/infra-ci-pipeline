@@ -71,7 +71,7 @@ pipeline {
                 sh "pwd"
                 script {
                     def r = sh (
-                        script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins ansible_ssh_private_key_file=~jenkins/.ssh/id_rsa' ansible/harden_linux_os.yml"
+                        script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins ansible_ssh_private_key_file=~/.ssh/infra-ci' ansible/harden_linux_os.yml"
                     )
                 }
 
