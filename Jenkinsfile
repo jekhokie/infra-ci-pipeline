@@ -29,7 +29,7 @@ pipeline {
                 echo 'Starting new VM...'
                 sh "${vbCmd} startvm '${hardenedVM}' --type headless"
 
-                echo 'Waiting for boot and IP address...'
+                echo 'Waiting for boot to get correct IP address...'
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
                         script {
@@ -50,6 +50,18 @@ pipeline {
                     }
                 }
                 echo "Hardened VM IP Address: ${hardenedVMIP}"
+
+                echo "Wait for IP to be reachable..."
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitUntil {
+                        script {
+                            def r = sh (
+                                script: "/sbin/ping -c 1 -t 1 ${hardenedVMIP}",
+                                returnStatus: true
+                            ) == 0
+                        }
+                    }
+                }
 
                 echo "Running smoke tests..."
                 sh "${ansibleCmd} --version"
