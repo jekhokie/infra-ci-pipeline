@@ -82,7 +82,7 @@ pipeline {
                     waitUntil {
                         script {
                             def r = sh (
-                                script: "${vbCmd} showvminfo --machinereadable ${hardenVMIP} | grep -q ^VMState=.poweroff.",
+                                script: "${vbCmd} showvminfo --machinereadable ${hardenedVMIP} | grep -q ^VMState=.poweroff.",
                                 returnStatus: true
                             )
 
