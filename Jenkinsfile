@@ -44,8 +44,6 @@ pipeline {
                                     returnStdout: true
                                 ).trim().split(': ')[1]
 
-                                // there is a timing issue - wait some time to ensure the VM is actually ready
-                                sleep 10
                                 return true
                             }
                         }
@@ -71,7 +69,7 @@ pipeline {
                 sh "${ansibleCmd} --version"
                 script {
                     def r = sh (
-                        script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins' ansible/harden_linux_os.yml"
+                        script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins' --private-key ~jenkins/.ssh/id_rsa ansible/harden_linux_os.yml"
                     )
                 }
 
