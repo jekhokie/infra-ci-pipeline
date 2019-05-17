@@ -44,6 +44,8 @@ pipeline {
                                     returnStdout: true
                                 ).trim().split(': ')[1]
 
+                                // there is a timing issue - wait some time to ensure the VM is actually ready
+                                sleep 10
                                 return true
                             }
                         }
