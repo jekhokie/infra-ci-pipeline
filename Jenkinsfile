@@ -54,10 +54,12 @@ pipeline {
                 echo "Wait for IP to be reachable..."
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
-                        sh (
+                        def r = sh (
                             script: "/sbin/ping -c 1 -t 1 ${hardenedVMIP}",
                             returnStatus: true
-                        ) == 0
+                        )
+
+                        return (r == 0)
                     }
                 }
 
