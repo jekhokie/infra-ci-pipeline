@@ -65,15 +65,14 @@ pipeline {
                     }
                 }
 
-                echo "Running smoke tests..."
-                sh "${ansibleCmd} --version"
-                sh "whoami"
-                sh "pwd"
+                echo "Running hardening scripts..."
                 script {
                     def r = sh (
                         script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins ansible_ssh_private_key_file=~/.ssh/infra-ci' ansible/harden_linux_os.yml"
                     )
                 }
+
+                echo "TODO: Running smoke tests..."
 
                 echo 'Shutting down hardened VM...'
                 sh "${vbCmd} controlvm ${hardenedVM} acpipowerbutton"
@@ -83,7 +82,7 @@ pipeline {
                     waitUntil {
                         script {
                             def r = sh (
-                                script: "${vbCmd} list runningvms | grep '${hardenedVM}'",
+                                script: "${vbCmd} showvminfo --machinereadable ${hardenVMIP} | grep -q ^VMState=.poweroff.",
                                 returnStatus: true
                             )
 
