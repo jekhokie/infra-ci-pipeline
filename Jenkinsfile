@@ -5,43 +5,42 @@ pipeline {
     agent any
 
     environment {
-        vbCommand  = "/usr/local/bin/vboxmanage"
-        baseVM     = "CentOS7"
-        hardenedVM = "${baseVM}-harden-${env.BUILD_ID}"
+        vbCmd          = "/usr/local/bin/vboxmanage"
+        ansibleCmd     = "/usr/local/bin/ansible"
+        ansiblePlayCmd = "/usr/local/bin/ansible-playbook"
+        baseVM         = "CentOS7"
+        hardenedVM     = "${baseVM}-harden-${env.BUILD_ID}"
     }
 
     stages {
-        stage('Declare Base Image') {
+        stage('Job Information') {
             steps {
-                echo 'Base image is...'
-                sh 'whoami'
-                sh 'pwd'
-                sh "${vbCommand} showvminfo ${baseVM}"
+                echo 'Base image details:'
+                sh "${vbCmd} showvminfo ${baseVM}"
                 echo "Build ID: ${env.BUILD_ID}"
             }
         }
+
         stage('Security Hardening') {
             steps {
-                echo 'Hardening...'
-
                 echo 'Cloning base VM template to new VM...'
-                sh "${vbCommand} clonevm ${baseVM} --name '${hardenedVM}' --register"
+                sh "${vbCmd} clonevm ${baseVM} --name '${hardenedVM}' --register"
 
                 echo 'Starting new VM...'
-                sh "${vbCommand} startvm '${hardenedVM}' --type headless"
+                sh "${vbCmd} startvm '${hardenedVM}' --type headless"
 
                 echo 'Waiting for IP address...'
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
                         script {
                             def r = sh (
-                                script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                                script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                 returnStatus: true
                             )
 
                             if (r == 0) {
                                 hardenedVMIP = sh (
-                                    script: "${vbCommand} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
+                                    script: "${vbCmd} guestproperty get '${hardenedVM}' '/VirtualBox/GuestInfo/Net/0/V4/IP'",
                                     returnStdout: true
                                 ).trim()
                                 return true
@@ -49,10 +48,36 @@ pipeline {
                         }
                     }
                 }
-                echo "${hardenedVMIP.split(': ')[1]}"
+                hardenedVMIP = hardenedVMIP.split(': ')[1]
+                echo "Hardened VM IP Address: ${hardenedVMIP}"
+
+                echo "Running smoke tests..."
+                sh "%{ansibleCmd} --version"
+                script {
+                    def r = sh (
+                        script: "%{ansiblePlayCmd} -i ${hardenedVMIP}, -e "ansible_user=osboxes ansible_ssh_pass=osboxes.org" ansible/harden_linux_os.yml"
+                    )
+                }
+
+                echo 'Shutting down hardened VM...'
+                sh "${vbCmd} controlvm ${hardenedVM} acpipowerbutton"
+
+                echo 'Waiting for VM to shut down...'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitUntil {
+                        script {
+                            def r = sh (
+                                script: "${vbCmd} list runningvms | grep '${hardenedVM}'",
+                                returnStatus: true
+                            )
+
+                            return (r == 0)
+                        }
+                    }
+                }
 
                 echo 'Removing Hardened VM...'
-                sh "${vbCommand} unregistervm '${hardenedVM}' --delete"
+                sh "${vbCmd} unregistervm '${hardenedVM}' --delete"
             }
         }
         stage('Kernel Tuning') {

@@ -1,0 +1,15 @@
+---
+- name: Harden Operating System
+  hosts: all
+  become: yes
+  tasks:
+    - name: remove unnecessary packages
+      yum:
+        name:
+          - xinetd
+          - ypserv
+          - tftp-server
+          - telnet-server
+          - rsh-server
+        state: absent
+...
