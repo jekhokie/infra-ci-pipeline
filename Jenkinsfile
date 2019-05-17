@@ -69,7 +69,7 @@ pipeline {
                 sh "${ansibleCmd} --version"
                 script {
                     def r = sh (
-                        script: "${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins' ansible/harden_linux_os.yml"
+                        script: "ANSIBLE_HOST_KEY_CHECKING=False ${ansiblePlayCmd} -i ${hardenedVMIP}, -e 'ansible_user=jenkins' ansible/harden_linux_os.yml"
                     )
                 }
 
